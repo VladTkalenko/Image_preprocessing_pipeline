@@ -1,0 +1,4 @@
+PyDrive
+supervisely
+moviepy
+opencv-contrib-python
