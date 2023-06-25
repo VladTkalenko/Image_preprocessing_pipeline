@@ -15,16 +15,19 @@ def get_video_crop(start_time: float, end_time: float, src_path: str, dest_path:
 def play_frames_from_video(src_video: str, folder_with_clips: str, img_width: int = 1080, img_height: int = 720):
     clip = VideoFileClip(src_video)
 
-    frames_from_video = list(clip.iter_frames(with_times=True))
-
-    frames = [cv.cvtColor(frame[1], cv.COLOR_RGB2BGR) for frame in frames_from_video]
+    times = [item[0] for item in clip.iter_frames(with_times=True)]
 
     counter = 0
     num_of_clips = 1
     start_clip_time = 0
     end_clip_time = 0
+
+
     while True:
-        frame = cv.resize(frames[counter], (img_width, img_height))
+        print(counter)
+        frame = clip.get_frame(times[counter])
+        frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+        frame = cv.resize(frame, (img_width, img_height))
         cv.imshow('Frame', frame)
 
         k = cv.waitKey(0)
@@ -33,9 +36,9 @@ def play_frames_from_video(src_video: str, folder_with_clips: str, img_width: in
             break
 
         elif k == ord('o'):
-            start_clip_time = frames_from_video[counter][0]
+            start_clip_time = times[counter]
         elif k == ord('p'):
-            end_clip_time = frames_from_video[counter][0]
+            end_clip_time = times[counter]
 
         elif k == ord(' '):
             old_file_name = os.path.basename(src_video)
@@ -48,7 +51,7 @@ def play_frames_from_video(src_video: str, folder_with_clips: str, img_width: in
             num_of_clips += 1
 
         elif k == ord('s'):
-            if counter < len(frames)-1:
+            if counter < len(times)-2:
                 counter += 1
             else:
                 continue
